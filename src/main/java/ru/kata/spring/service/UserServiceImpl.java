@@ -10,6 +10,7 @@ import ru.kata.spring.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -27,7 +28,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<User> findById(Long id) {
-        return userRepository.findById(id);
+        return userRepository.findUserById(id);
     }
 
     @Override
@@ -44,14 +45,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public User create(User user, String rawPassword, Integer[] selectedRoleIds) {
         user.setPassword(passwordEncoder.encode(rawPassword));
-        user.setRoles(roleService.findAllById(List.of(selectedRoleIds)));
+        // roleService.findAllById ищет роли в базе, которые установил админ на страние регистрации
+        user.getRoles().addAll(roleService.findAllById(List.of(selectedRoleIds)));
         return userRepository.save(user);
     }
 
     @Override
     public User update(User user, Integer[] selectedRoleIds) {
-        user.setPassword(userRepository.findById(user.getId()).get().getPassword());
-        user.setRoles(roleService.findAllById(List.of(selectedRoleIds)));
+        user.setPassword(userRepository.findByIdIfUserExists(user.getId()).getPassword());
+        // Две строки ниже заменяют роли юзера на роли, установленные админом
+        user.getRoles().clear();
+        user.getRoles().addAll(roleService.findAllById(List.of(selectedRoleIds)));
         return userRepository.save(user);
     }
 

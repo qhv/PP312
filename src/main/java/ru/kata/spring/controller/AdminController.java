@@ -12,8 +12,6 @@ import ru.kata.spring.model.User;
 import ru.kata.spring.service.RoleService;
 import ru.kata.spring.service.UserService;
 
-import javax.persistence.criteria.CriteriaBuilder;
-
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
