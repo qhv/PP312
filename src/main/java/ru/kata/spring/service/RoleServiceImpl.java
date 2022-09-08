@@ -25,12 +25,7 @@ public class RoleServiceImpl implements RoleService {
         return roleRepository.findAll();
     }
 
-    @Override public List<Role> findAllByIds(String selectedRoles) {
-        return Arrays.stream(selectedRoles.split(","))
-                .map(Integer::parseInt)
-                .map(roleRepository::findById)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toList());
+    public List<Role> findAllById(List<Integer> ids) {
+        return roleRepository.findAllById(ids);
     }
 }

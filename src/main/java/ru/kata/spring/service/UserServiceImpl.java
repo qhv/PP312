@@ -30,7 +30,8 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(id);
     }
 
-    @Override public User findByLogin(String login) {
+    @Override
+    public User findByLogin(String login) {
         return userRepository.findByLogin(login)
                 .orElseThrow(() -> new UsernameNotFoundException("Fail to retrieve user: " + login));
     }
@@ -41,16 +42,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User create(User user, String rawPassword, String selectedRoles) {
+    public User create(User user, String rawPassword, Integer[] selectedRoleIds) {
         user.setPassword(passwordEncoder.encode(rawPassword));
-        user.setRoles(roleService.findAllByIds(selectedRoles));
+        user.setRoles(roleService.findAllById(List.of(selectedRoleIds)));
         return userRepository.save(user);
     }
 
     @Override
-    public User update(User user, String selectedRoles) {
+    public User update(User user, Integer[] selectedRoleIds) {
         user.setPassword(userRepository.findById(user.getId()).get().getPassword());
-        user.setRoles(roleService.findAllByIds(selectedRoles));
+        user.setRoles(roleService.findAllById(List.of(selectedRoleIds)));
         return userRepository.save(user);
     }
 
@@ -67,11 +68,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByLogin(username)
-                .map(user -> new org.springframework.security.core.userdetails.User(
-                        user.getLogin(),
-                        user.getPassword(),
-                        user.getRoles()
-                ))
                 .orElseThrow(() -> new UsernameNotFoundException("Fail to retrieve user: " + username));
     }
 }
