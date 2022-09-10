@@ -24,7 +24,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .disable()
                 .authorizeHttpRequests(
                         urlConfig -> urlConfig
-                                .antMatchers("/", "/login")
+                                .antMatchers("/", "/index", "/login")
                                 .permitAll()
                                 .antMatchers("/user/**")
                                 .hasAnyAuthority("USER", "ADMIN")
